@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Cadastro from "./pages/Cadastro";
-import Login from "./pages/Login";
-import ToDo from "./pages/ListaToDo";
+import Cadastro from "./pages/cadastro";
+import Login from "./pages/login";
+import ToDo from "./pages/tasks";
 
 function App() {
   return (

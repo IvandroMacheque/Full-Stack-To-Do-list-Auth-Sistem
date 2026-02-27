@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { Link } from "react-router-dom"
 import { motion, AnimatePresence } from 'framer-motion'
-import { useLogin } from "../../hooks/useLogin"
+import { useLogin } from "../hooks/useLogin"
 
 function Login() {
     const { 

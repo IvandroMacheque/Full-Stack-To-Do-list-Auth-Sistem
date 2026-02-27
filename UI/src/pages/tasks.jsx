@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { motion, AnimatePresence } from 'framer-motion'
-import { useToDo } from "../../hooks/useToDo"
+import { useToDo } from "../hooks/useToDo"
 
 function ToDo() {
     const {
