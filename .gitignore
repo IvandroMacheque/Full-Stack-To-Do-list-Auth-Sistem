@@ -1,0 +1,15 @@
+# Pastas de dependências
+node_modules/
+dist/
+.json
+
+# Arquivos de ambiente (SEGURANÇA!)
+.env
+.env.local
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Prisma (opcional, dependendo se você quer mandar os logs)
+prisma/*.db

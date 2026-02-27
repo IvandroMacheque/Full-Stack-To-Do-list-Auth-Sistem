@@ -1,0 +1,56 @@
+### Teste de Cadastro
+POST http://localhost:3001/cadastro
+Content-Type: application/json
+
+{
+    "nome": "Marcelo",
+    "email": "marcelo@gmail.com",
+    "senha": "123b123"
+}
+
+###
+
+### Teste de Login
+POST http://localhost:3001/login
+Content-Type: application/json
+
+{
+    "email": "marcelo@gmail.com",
+    "senha": "123b123"
+}
+
+###
+
+### Teste de Refresh Token
+POST http://localhost:3001/refresh
+Content-Type: application/json
+
+### Teste de Adicionar Tarefa
+POST http://localhost:3001/tarefas
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjJjMjJlNjA3LTdhNDktNDUwNy04OWM5LTgyZjU5OTZkZWRjMyIsImlhdCI6MTc3MjAzOTc0MSwiZXhwIjoxNzcyMDQwNjQxfQ.jWbwDiHHoh5d1MwlT58EVYtNgmVDXLfSpotUjLmLxCE
+
+{
+    "titulo": "jogar bola",
+    "concluida": false,
+    "userId": "2c22e607-7a49-4507-89c9-82f5996decd3"
+}
+
+### teste de listar tarefas
+GET http://localhost:3001/tarefas
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjJjMjJlNjA3LTdhNDktNDUwNy04OWM5LTgyZjU5OTZkZWRjMyIsImlhdCI6MTc3MjA0MTQwMSwiZXhwIjoxNzcyMDQyMzAxfQ.fai2MJLNriIV979m9wfUiJLjKyLVVgbx3R-VcdBMuEo
+
+### teste de atualizar tarefa
+PUT http://localhost:3001/tarefas/67108
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE5ZGVjM2MwLTRiYmMtNDVlNi05ZDYzLTdmN2JlNmE5OGM4ZSIsImlhdCI6MTc3MjAzNzg0MSwiZXhwIjoxNzcyMDM3OTAxfQ.KjC53NDV4BgjcGgRK28K3IaYfMZoc2Rq4C1E9mJazoI
+
+{
+    "concluida": true
+}
+
+### teste de logout
+POST http://localhost:3001/logout
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjJjMjJlNjA3LTdhNDktNDUwNy04OWM5LTgyZjU5OTZkZWRjMyIsImlhdCI6MTc3MjA0MTQwMSwiZXhwIjoxNzcyMDQyMzAxfQ.fai2MJLNriIV979m9wfUiJLjKyLVVgbx3R-VcdBMuEo
