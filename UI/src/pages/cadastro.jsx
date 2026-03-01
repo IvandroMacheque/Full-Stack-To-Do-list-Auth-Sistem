@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { Link } from "react-router-dom"
 import { motion, AnimatePresence } from 'framer-motion'
-import { useCadastro } from "../hooks/useCadastro"
+import { useCadastro } from "../Hooks/useCadastro"
 
 function Cadastro() {
   const {

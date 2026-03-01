@@ -1,7 +1,7 @@
 import axios from "axios"
 
 const api = axios.create({
-    baseURL: "http://localhost:3001",
+    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001',
     withCredentials: true
 })
 
@@ -18,12 +18,17 @@ api.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config
 
+        // se o erro 401 for da tela de login, não tenta renovar o token, apenas rejeita o erro
+        if (originalRequest.url.includes("/login")) {
+            return Promise.reject(error)
+        }
+
         // Se o erro for 401 e ainda não tentamos renovar o token
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true // Marca para não entrar em loop de erro
 
             try {
-                const res = await axios.post('http://localhost:3001/refresh', {}, { withCredentials: true })
+                const res = await axios.post(`${api.defaults.baseURL}/refresh`, {}, { withCredentials: true })
                 const novoToken = res.data.token
                 console.log(novoToken)
                 localStorage.setItem('token', novoToken)

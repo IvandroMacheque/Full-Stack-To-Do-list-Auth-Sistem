@@ -8,7 +8,7 @@ import cookieParser from "cookie-parser"
 const app = express()
 app.use(cors(
     {
-        origin: "http://localhost:5173",
+        origin: process.env.FRONTEND_URL,
         credentials: true
     }
 ))
@@ -17,6 +17,5 @@ app.use(cookieParser())
 app.use('/', publicRoutes)
 app.use('/', auth, privateToDoRoutes)
 
-app.listen(3001, () => {
-    console.log("Servidor rodando na porta 3001")
-})
+const PORT = process.env.PORT || 3001
+app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`))
