@@ -15,7 +15,10 @@ export const listarTarefas = async (req, res) => {
                 orderBy: [
                     { concluida: 'asc' }, // Pendentes (false) vêm antes de Concluídas (true)
                     { titulo: 'asc' }    // Ordem alfabética de A-Z
-                ]
+                ],
+                include: {
+                    category: true
+                }
             }
         )
         res.status(200).json({message: "Tarefas listadas com sucesso", tarefas})
@@ -25,6 +28,107 @@ export const listarTarefas = async (req, res) => {
         res.status(500).json({ message: "Erro no servidor. Tente Novamente" })
     }
 }
+
+// filtrar tarefas por status
+
+export const filtrarTarefas = async (req, res) => {
+    const { status } = req.params;
+    try {
+        const tarefas = await prisma.todo.findMany({
+            where: {
+                userId: req.userId,
+                concluida: status === "concluidas" ? true : status === "pendentes" ? false : undefined
+            },
+            orderBy: [
+                { concluida: 'asc' },
+                { titulo: 'asc' }
+            ]
+        });
+        res.status(200).json({ message: "Tarefas filtradas com sucesso", tarefas });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Erro no servidor. Tente Novamente" });
+    }
+};
+
+// adicionar categoria
+
+export const adicionarCategoria = async (req, res) => {
+    const categoria = req.body
+
+    if(!categoria.nome || categoria.nome.trim() === ""){
+        return res.status(400).json({ message: "Nome da categoria é obrigatório" })
+    }
+    try{
+        const novaCategoria = await prisma.category.create({
+            data: {
+                nome: categoria.nome,
+                userId: req.userId,
+                cor: categoria.cor || "#ff0000"
+            }
+        })
+        res.status(200).json({message: "Categoria adicionada com sucesso", novaCategoria})
+    }
+    catch(error){
+        console.log(error)
+        res.status(500).json({ message: "Erro no servidor. Tente Novamente" })
+    }
+}
+
+// buscar categorias para filtro
+export const listarCategorias = async (req, res) => {
+    try {
+        const categorias = await prisma.category.findMany({
+            where: { userId: req.userId },
+            orderBy: { nome: 'asc' },
+
+        });
+        res.status(200).json({ message: "Categorias listadas com sucesso", categorias });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Erro no servidor. Tente Novamente" });
+     }
+    }
+
+// filtrar por categoria
+
+export const filtrarPorCategoria = async (req, res) => {
+    const categoryId = req.params.categoryId;
+    try {
+        const tarefas = await prisma.todo.findMany({
+            where: {
+                userId: req.userId,
+                categoryId: categoryId
+            },
+            orderBy: [
+                { concluida: 'asc' },
+                { titulo: 'asc' }
+            ]
+        });
+        res.status(200).json({ message: "Tarefas filtradas por categoria com sucesso", tarefas });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Erro no servidor. Tente Novamente" });
+    }
+};
+
+// deletar categoria
+
+export const deleteCategoria = async (req, res) => {
+    const categoryId = req.params.categoryId;
+    try {
+        await prisma.category.delete({
+            where: {
+                id: categoryId,
+                userId: req.userId
+            }
+        });
+        res.status(200).json({ message: "Categoria deletada com sucesso" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Erro no servidor. Tente Novamente" });
+    }
+};
 
 // Adicionar tarefa
 
@@ -39,6 +143,9 @@ export const adicionarTarefa = async (req, res) => {
             data: {
                 titulo: task.titulo,
                 concluida: task.concluida,
+                dataInicio: task.dataInicio ? new Date(task.dataInicio) : null,
+                dataTermino: task.dataTermino ? new Date(task.dataTermino) : null,
+                categoryId: task.categoryId || null, 
                 userId: req.userId
             }
         })

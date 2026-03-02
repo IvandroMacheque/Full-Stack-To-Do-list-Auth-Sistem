@@ -2,6 +2,7 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/API";
+import { toast } from "sonner";
 
 export function useLogin() {
     const emailRef = useRef();
@@ -49,11 +50,14 @@ export function useLogin() {
             
             localStorage.setItem("token", token);
             navigate("/tarefas");
+            toast.success("Bem vindo de volta, " + email.split("@")[0] + "!");
         } catch (err) {
             if (err.response?.status === 404) {
-                setEmailError("Usuário não encontrado");
+                setEmailError("Usuário não encontrado")
+                toast.error("Usuário não encontrado. Verifique seu email ou cadastre-se.")
             } else if (err.response?.status === 401) {
                 setPasswordError("Senha incorreta");
+                toast.error("Senha incorreta. Tente novamente.");
             } else {
                 setEmailError("Erro no servidor. Tente novamente");
             }
@@ -62,7 +66,6 @@ export function useLogin() {
         }
     }
 
-    // Retornamos tudo que o componente visual vai precisar
     return {
         emailRef,
         passwordRef,

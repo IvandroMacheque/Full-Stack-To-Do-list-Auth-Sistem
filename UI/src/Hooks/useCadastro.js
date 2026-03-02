@@ -2,6 +2,7 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/API";
+import { toast } from "sonner";
 
 export function useCadastro() {
   const nameRef = useRef();
@@ -59,9 +60,11 @@ export function useCadastro() {
     try {
       await api.post("/cadastro", { nome, email, senha });
       navigate("/login");
+      toast.success("Cadastro realizado com sucesso! Faça login para continuar.");
     } catch (err) {
       if (err.response?.status === 409) {
         setEmailError("Email já cadastrado");
+        toast.error("Email já cadastrado. Tente outro ou faça login.");
       } else {
         setEmailError("Erro no servidor. Tente novamente");
       }

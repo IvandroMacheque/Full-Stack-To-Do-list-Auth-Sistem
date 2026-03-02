@@ -14,22 +14,34 @@ datasource db {
 }
 
 model Usuario {
-  id      String      @id @default(uuid())
-  nome    String
-  email   String   @unique
-  senha   String
-  // Um usuário tem muitas tarefas
-  tarefas Todo[]
-  refreshToken   String?
+  id           String     @id @default(uuid())
+  nome         String
+  email        String     @unique
+  senha        String
+  // Relacionamentos
+  tarefas      Todo[]
+  categorias   Category[]
+  refreshToken String?
 }
 
 model Todo {
-  id        String      @id @default(uuid())
-  titulo    String
-  concluida Boolean  @default(false)
-  createdAt DateTime @default(now())
+  id          String    @id @default(uuid())
+  titulo      String
+  concluida   Boolean   @default(false)
+  dataInicio  DateTime?
+  dataTermino DateTime?
+  createdAt   DateTime  @default(now())
+  userId      String
+  user        Usuario   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category    Category? @relation(fields: [categoryId], references: [id])
+  categoryId  String?
+}
 
-  // Relacionamento: cada tarefa pertence a um usuário
-  userId    String
-  user      Usuario  @relation(fields: [userId], references: [id], onDelete: Cascade)
+model Category {
+  id     String  @id @default(uuid())
+  nome   String
+  cor    String  @default("#3b82f6") // Cor em hexadecimal do Tailwind
+  userId String
+  user   Usuario @relation(fields: [userId], references: [id], onDelete: Cascade)
+  todos  Todo[]
 }
