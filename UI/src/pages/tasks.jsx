@@ -146,40 +146,46 @@ function ToDo() {
 
                     <AnimatePresence>
                         {menuOpen && (
-                            <motion.div 
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                className="absolute top-16 right-4 w-64 bg-white border border-gray-200 rounded-lg shadow-xl z-50 p-4"
-                            >
-                                <div>
-                                    <img 
-                                        src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.nome)}&background=random&color=fff&size=128`} 
-                                        alt="Avatar do usuário" 
-                                        className="w-16 h-16 rounded-full mb-3 object-cover border-2 border-gray-300 mx-auto"
-                                    />
-                                </div>
-                                <div className="border-b pb-5 mb-3">
-                                    <p className="font-bold text-gray-800 text-center">{user.nome}</p>
-                                    <p className="text-sm text-gray-500 truncate text-center">{user.email}</p>
-                                </div>
+                             <>
+                                 <div 
+                                    className="fixed inset-0 z-40 cursor-default bg-black/5" 
+                                    onClick={() => setMenuOpen(false)}
+                                />
+                                <motion.div 
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    className="absolute top-16 right-4 w-64 bg-white border border-gray-200 rounded-lg shadow-xl z-50 p-4"
+                                >
+                                    <div>
+                                        <img 
+                                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.nome)}&background=random&color=fff&size=128`} 
+                                            alt="Avatar do usuário" 
+                                            className="w-16 h-16 rounded-full mb-3 object-cover border-2 border-gray-300 mx-auto"
+                                        />
+                                    </div>
+                                    <div className="border-b pb-5 mb-3">
+                                        <p className="font-bold text-gray-800 text-center">{user.nome}</p>
+                                        <p className="text-sm text-gray-500 truncate text-center">{user.email}</p>
+                                    </div>
 
-                                <div className="flex justify-between items-center w-full px-3 py-2">
-                                    <button 
-                                        onClick={handleLogout}
-                                        className="cursor-pointer flex items-center gap-2 text-sm text-gray-600 hover:text-red-600 font-medium transition mt-1"
-                                    >
-                                        Sair
-                                    </button>
-                                    
-                                    <button 
-                                        onClick={handleDeleteAccount}
-                                        className="cursor-pointer flex items-center gap-2 text-sm text-red-500 hover:text-red-700 font-medium transition mt-1"
-                                    >
-                                        Excluir conta
-                                    </button>
-                                </div>
-                            </motion.div>
+                                    <div className="flex justify-between items-center w-full px-3 py-2">
+                                        <button 
+                                            onClick={handleLogout}
+                                            className="cursor-pointer flex items-center gap-2 text-sm text-gray-600 hover:text-red-600 font-medium transition mt-1"
+                                        >
+                                            Sair
+                                        </button>
+                                        
+                                        <button 
+                                            onClick={handleDeleteAccount}
+                                            className="cursor-pointer flex items-center gap-2 text-sm text-red-500 hover:text-red-700 font-medium transition mt-1"
+                                        >
+                                            Excluir conta
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            </>
                         )}
                     </AnimatePresence>
                 </div>
@@ -297,11 +303,11 @@ function ToDo() {
                         <div className="flex gap-4">
                             <div className="flex-1">
                                 <label className="text-xs text-gray-500">Início</label>
-                                <input ref={dataInicioRef} type="date" className="cursor-pointer w-full border p-1 rounded text-sm" />
+                                <input ref={dataInicioRef} type="date" className="w-full border p-1 rounded text-sm" />
                             </div>
                             <div className="flex-1">
                                 <label className="text-xs text-gray-500">Término</label>
-                                <input ref={dataTerminoRef} type="date" className="cursor-pointer w-full border p-1 rounded text-sm" />
+                                <input ref={dataTerminoRef} type="date" className="w-full border p-1 rounded text-sm" />
                             </div>
                         </div>
                     </form>
