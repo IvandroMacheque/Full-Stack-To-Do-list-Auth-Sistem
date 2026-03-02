@@ -47,21 +47,21 @@ function ToDo() {
                     <div className="flex flex-col gap-1">
                         <button 
                             onClick={() => filtrarTarefas('todos')}
-                            className={`text-left px-3 py-2 rounded-md text-sm ${
+                            className={`cursor-pointer text-left px-3 py-2 rounded-md text-sm ${
                                 filtroAtivo === 'todos' ? 'bg-blue-50 text-blue-600 font-bold' : 'text-gray-600 hover:bg-gray-100'}`}
                         >
                             📂 Todas
                         </button>
                         <button 
                             onClick={() => filtrarTarefas("pendentes")}
-                            className={`text-left px-3 py-2 rounded-md text-sm ${
+                            className={`cursor-pointer text-left px-3 py-2 rounded-md text-sm ${
                                 filtroAtivo === 'pendentes' ? 'bg-blue-50 text-blue-600 font-bold' : 'text-gray-600 hover:bg-gray-100'}`}
                         >
                             ⏳ Pendentes
                         </button>
                         <button 
                             onClick={() => filtrarTarefas("concluidas")}
-                            className={`text-left px-3 py-2 rounded-md text-sm ${
+                            className={`cursor-pointer text-left px-3 py-2 rounded-md text-sm ${
                                 filtroAtivo === 'concluidas' ? 'bg-blue-50 text-blue-600 font-bold' : 'text-gray-600 hover:bg-gray-100'}`}
                         >
                             ✅ Concluídas
@@ -78,7 +78,7 @@ function ToDo() {
                                     key={categoria.id}>
                                         <div className='flex'>
                                             <button onClick={() => filtrarPorCategoria(categoria.id)}
-                                            className={`text-left w-full px-3 py-2 rounded-md text-sm text-gray-600 hover:bg-gray-100 flex items-center gap-2 ${
+                                            className={`cursor-pointer text-left w-full px-3 py-2 rounded-md text-sm text-gray-600 hover:bg-gray-100 flex items-center gap-2 ${
                                                 filtroCategoriaAtivo === categoria.id ? 'bg-blue-50 text-blue-600 font-bold' : ''
                                             }`}>
                                                 <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: categoria.cor }}></span>
@@ -130,7 +130,7 @@ function ToDo() {
                         </AnimatePresence>
                     <button 
                         onClick={adicionarCategoria}
-                        className="w-full mt-3 bg-blue-500 text-white py-2 px-3 rounded-md text-sm hover:bg-blue-600 transition-all">
+                        className="cursor-pointer w-full mt-3 bg-blue-500 text-white py-2 px-3 rounded-md text-sm hover:bg-blue-600 transition-all">
                         Add
                     </button>
                 </nav>
@@ -257,7 +257,7 @@ function ToDo() {
                                 }`} 
                             />
                             <select 
-                                className="ml-2 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-blue-500" 
+                                className="cursor-pointer ml-2 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-blue-500" 
                                 value={categoriaEscolhida}
                                 onChange={(e) => {
                                     setCategoriaEscolhida(e.target.value);
@@ -297,11 +297,11 @@ function ToDo() {
                         <div className="flex gap-4">
                             <div className="flex-1">
                                 <label className="text-xs text-gray-500">Início</label>
-                                <input ref={dataInicioRef} type="date" className="w-full border p-1 rounded text-sm" />
+                                <input ref={dataInicioRef} type="date" className="cursor-pointer w-full border p-1 rounded text-sm" />
                             </div>
                             <div className="flex-1">
                                 <label className="text-xs text-gray-500">Término</label>
-                                <input ref={dataTerminoRef} type="date" className="w-full border p-1 rounded text-sm" />
+                                <input ref={dataTerminoRef} type="date" className="cursor-pointer w-full border p-1 rounded text-sm" />
                             </div>
                         </div>
                     </form>
