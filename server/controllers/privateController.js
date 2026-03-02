@@ -8,10 +8,19 @@ const secretKey = process.env.JWT_SECRET
 // Listar tarefas
 
 export const listarTarefas = async (req, res) => {
+    const { search, category, status } = req.query
     try{
         const tarefas = await prisma.todo.findMany(
             {
-                where: { userId: req.userId },
+                where: { 
+                    userId: req.userId,
+                    titulo: {
+                        contains: search || "",
+                        mode: 'insensitive'
+                    },
+                    categoryId: category || undefined,
+                    concluida: status === "concluidas" ? true : status === "pendentes" ? false : undefined
+                },
                 orderBy: [
                     { concluida: 'asc' }, // Pendentes (false) vêm antes de Concluídas (true)
                     { titulo: 'asc' }    // Ordem alfabética de A-Z
@@ -28,28 +37,6 @@ export const listarTarefas = async (req, res) => {
         res.status(500).json({ message: "Erro no servidor. Tente Novamente" })
     }
 }
-
-// filtrar tarefas por status
-
-export const filtrarTarefas = async (req, res) => {
-    const { status } = req.params;
-    try {
-        const tarefas = await prisma.todo.findMany({
-            where: {
-                userId: req.userId,
-                concluida: status === "concluidas" ? true : status === "pendentes" ? false : undefined
-            },
-            orderBy: [
-                { concluida: 'asc' },
-                { titulo: 'asc' }
-            ]
-        });
-        res.status(200).json({ message: "Tarefas filtradas com sucesso", tarefas });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: "Erro no servidor. Tente Novamente" });
-    }
-};
 
 // adicionar categoria
 
@@ -89,28 +76,6 @@ export const listarCategorias = async (req, res) => {
         res.status(500).json({ message: "Erro no servidor. Tente Novamente" });
      }
     }
-
-// filtrar por categoria
-
-export const filtrarPorCategoria = async (req, res) => {
-    const categoryId = req.params.categoryId;
-    try {
-        const tarefas = await prisma.todo.findMany({
-            where: {
-                userId: req.userId,
-                categoryId: categoryId
-            },
-            orderBy: [
-                { concluida: 'asc' },
-                { titulo: 'asc' }
-            ]
-        });
-        res.status(200).json({ message: "Tarefas filtradas por categoria com sucesso", tarefas });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: "Erro no servidor. Tente Novamente" });
-    }
-};
 
 // deletar categoria
 
@@ -156,6 +121,30 @@ export const adicionarTarefa = async (req, res) => {
         res.status(500).json({ message: "Erro no servidor. Tente Novamente" })
     }
 }
+
+
+export const editarTarefa = async (req, res) => {
+    const { id } = req.params;
+    const { titulo } = req.body;
+
+    if (!titulo || titulo.trim() === "") {
+        return res.status(400).json({ message: "O título não pode estar vazio" });
+    }
+
+    try {
+        const tarefaAtualizada = await prisma.todo.update({
+            where: { 
+                id: id, // Ou parseInt(id) se seu ID for número
+                userId: req.userId // Segurança: Garante que o usuário só edita a própria tarefa
+            },
+            data: { titulo }
+        });
+
+        res.status(200).json(tarefaAtualizada);
+    } catch (error) {
+        res.status(500).json({ message: "Erro ao editar tarefa" });
+    }
+};
 
 // marcar como concluida
 

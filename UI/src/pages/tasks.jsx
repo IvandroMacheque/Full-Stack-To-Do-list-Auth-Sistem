@@ -33,34 +33,36 @@ function ToDo() {
         setCategoriaEscolhida,
         filtrarPorCategoria,
         filtroCategoriaAtivo,
-        deleteCategoria
+        deleteCategoria, pesquisa, setPesquisa, setFiltroAtivo, setFiltroCategoriaAtivo,
+        selecionarCategoria, iniciarEdicao, cancelarEdicao, editValue, setEditValue, salvarEdicao, editingId,
+        mensagem
     } = useToDo();
 
     return (
         <div className="flex min-h-screen bg-gray-50"> 
             <aside className="w-64 bg-white border-r border-gray-200 p-6 flex flex-col gap-8 hidden md:flex">
-                <h1 className="text-xl font-bold text-blue-600">Meu App</h1>
+                <h1 className="text-xl font-bold text-blue-600">To-Do App</h1>
 
                 {/* Seção de Filtros */}
                 <nav>
                     <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Filtros</p>
                     <div className="flex flex-col gap-1">
                         <button 
-                            onClick={() => filtrarTarefas('todos')}
+                            onClick={() => setFiltroAtivo('todos')}
                             className={`cursor-pointer text-left px-3 py-2 rounded-md text-sm ${
                                 filtroAtivo === 'todos' ? 'bg-blue-50 text-blue-600 font-bold' : 'text-gray-600 hover:bg-gray-100'}`}
                         >
                             📂 Todas
                         </button>
                         <button 
-                            onClick={() => filtrarTarefas("pendentes")}
+                            onClick={() => setFiltroAtivo("pendentes")}
                             className={`cursor-pointer text-left px-3 py-2 rounded-md text-sm ${
                                 filtroAtivo === 'pendentes' ? 'bg-blue-50 text-blue-600 font-bold' : 'text-gray-600 hover:bg-gray-100'}`}
                         >
                             ⏳ Pendentes
                         </button>
                         <button 
-                            onClick={() => filtrarTarefas("concluidas")}
+                            onClick={() => setFiltroAtivo("concluidas")}
                             className={`cursor-pointer text-left px-3 py-2 rounded-md text-sm ${
                                 filtroAtivo === 'concluidas' ? 'bg-blue-50 text-blue-600 font-bold' : 'text-gray-600 hover:bg-gray-100'}`}
                         >
@@ -77,7 +79,7 @@ function ToDo() {
                                     <li 
                                     key={categoria.id}>
                                         <div className='flex'>
-                                            <button onClick={() => filtrarPorCategoria(categoria.id)}
+                                            <button onClick={() => selecionarCategoria(categoria.id)}
                                             className={`cursor-pointer text-left w-full px-3 py-2 rounded-md text-sm text-gray-600 hover:bg-gray-100 flex items-center gap-2 ${
                                                 filtroCategoriaAtivo === categoria.id ? 'bg-blue-50 text-blue-600 font-bold' : ''
                                             }`}>
@@ -191,64 +193,134 @@ function ToDo() {
                 </div>
                 <div className="mx-auto mt-3 bg-white p-8 border border-gray-300 rounded-md shadow-lg max-w-5xl gap-5">
                     <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Tarefas</h2>
-                    
+                    <div className="relative mb-6">
+                        <input 
+                            type="text"
+                            placeholder="Pesquisar por tarefas..."
+                            value={pesquisa}
+                            onChange={(e) => setPesquisa(e.target.value)}
+                            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                        />
+                        <span className="absolute left-3 top-2.5 text-gray-400">🔍</span>
+                    </div>
                     <ul className="space-y-2 max-h-75 overflow-y-auto pr-2 custom-scrollbar">
                         <AnimatePresence mode="popLayout">
-                            {allTasks && allTasks.length > 0 ? (
-                                allTasks.map((tarefa) => (
-                                    <motion.li 
-                                        key={tarefa.id} 
-                                        initial={{ opacity: 0, x: -20 }} 
-                                        animate={{ opacity: 1, x: 0 }} 
-                                        exit={{ opacity: 0, x: 50 }} 
-                                        layout
-                                        transition={{ duration: 0.3 }} 
-                                        className="flex justify-between items-center bg-white w-full px-4 py-3 border border-gray-200 border-l-4 rounded-r-md shadow-sm hover:shadow-md transition-all"
-                                        style={{ borderLeftColor: tarefa.category ? tarefa.category.cor : '#d1d5db' }}
-                                    >
-                                        <div>
-                                            <p className={`font-semibold flex-1 ${tarefa.concluida ? "line-through text-gray-400" : "text-gray-700"}`}>
-                                                {tarefa.titulo}
-                                            </p>
+                        {allTasks && allTasks.length > 0 ? (
+                            allTasks.map((tarefa) => (
+                                <motion.li 
+                                    key={tarefa.id} 
+                                    initial={{ opacity: 0, x: -20 }} 
+                                    animate={{ opacity: 1, x: 0 }} 
+                                    exit={{ opacity: 0, x: 50 }} 
+                                    layout
+                                    transition={{ duration: 0.3 }} 
+                                    className="flex justify-between items-center bg-white w-full px-4 py-3 border border-gray-200 border-l-4 rounded-r-md shadow-sm hover:shadow-md transition-all"
+                                    style={{ borderLeftColor: tarefa.category ? tarefa.category.cor : '#d1d5db' }}
+                                >
+                                    <div className="flex-1 mr-4">
+                                        {editingId === tarefa.id ? (
+                                            // MODO DE EDIÇÃO
+                                            <input 
+                                                autoFocus
+                                                type="text"
+                                                value={editValue}
+                                                onChange={(e) => setEditValue(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') salvarEdicao(tarefa.id);
+                                                    if (e.key === 'Escape') cancelarEdicao();
+                                                }}
+                                                className="w-full border-b-2 border-blue-500 outline-none font-semibold text-gray-800 bg-transparent mb-1"
+                                            />
+                                        ) : (
+                                            // MODO DE VISUALIZAÇÃO
+                                            <div className="flex items-center gap-2 group">
+                                                <p 
+                                                    className={`font-semibold ${tarefa.concluida ? "line-through text-gray-400" : "text-gray-700"}`}
+                                                >
+                                                    {tarefa.titulo}
+                                                </p>
+                                                {/* Ícone discreto para avisar que pode editar (aparece no hover) */}
+                                                {!tarefa.concluida && (
+                                                    <button 
+                                                        onClick={() => iniciarEdicao(tarefa.id, tarefa.titulo)}
+                                                        className="opacity-0 group-hover:opacity-100 text-xs text-blue-400 hover:text-blue-600 transition-opacity cursor-pointer"
+                                                    >
+                                                        ✏️
+                                                    </button>
+                                                )}
+                                            </div>
+                                        )}
+                                        <div className="flex items-center gap-2 mt-1">
                                             <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${getStatus(tarefa).color}`}>
                                                 {getStatus(tarefa).label}
                                             </span>
                                             {tarefa.dataTermino && (
-                                                <span className="text-[10px] text-gray-700 flex items-center gap-1">
+                                                <span className="text-[10px] text-gray-500 flex items-center gap-1">
                                                     <span className="opacity-70">⌛</span> 
                                                     {new Date(tarefa.dataTermino).toLocaleDateString()}
                                                 </span>
                                             )}
                                         </div>
-                                        
-                                        
-                                        <div className="flex items-center gap-2">
-                                            <button 
-                                                type="button" 
-                                                onClick={() => updateTask(tarefa.id, !tarefa.concluida)} 
-                                                className={`cursor-pointer w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors ${
-                                                    tarefa.concluida ? "bg-green-500 border-green-500 text-white" : "bg-white border-gray-400 hover:border-green-500"
-                                                }`} 
-                                                title={tarefa.concluida ? "Desmarcar" : "Marcar"}
-                                            >
-                                                {tarefa.concluida ? "✓" : ""}
-                                            </button>
-                                            
-                                            <button 
-                                                type="button" 
-                                                onClick={() => deleteTask(tarefa.id)} 
-                                                className="cursor-pointer w-8 h-8 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition-all" 
-                                                title="Excluir tarefa"
-                                            > 
-                                                🗑️
-                                            </button>
-                                        </div>
-                                    </motion.li>
-                                ))
-                            ) : (
-                                <p className="text-center text-gray-500 py-4">Sem tarefas ainda</p>
-                            )}
-                        </AnimatePresence>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        {editingId === tarefa.id ? (
+                                            <>
+                                                <button 
+                                                    onClick={() => salvarEdicao(tarefa.id)}
+                                                    className="cursor-pointer text-xs font-bold text-green-600 hover:bg-green-50 px-2 py-1 rounded"
+                                                >
+                                                    Salvar
+                                                </button>
+                                                <button 
+                                                    onClick={cancelarEdicao}
+                                                    className="cursor-pointer text-xs font-bold text-red-500 hover:bg-red-50 px-2 py-1 rounded"
+                                                >
+                                                    Cancelar
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <button 
+                                                    type="button" 
+                                                    onClick={() => updateTask(tarefa.id, !tarefa.concluida)} 
+                                                    className={`cursor-pointer w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors ${
+                                                        tarefa.concluida ? "bg-green-500 border-green-500 text-white" : "bg-white border-gray-400 hover:border-green-500"
+                                                    }`} 
+                                                    title={tarefa.concluida ? "Desmarcar" : "Marcar"}
+                                                >
+                                                    {tarefa.concluida ? "✓" : ""}
+                                                </button>
+                                                
+                                                <button 
+                                                    type="button" 
+                                                    onClick={() => deleteTask(tarefa.id)} 
+                                                    className="cursor-pointer w-8 h-8 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition-all" 
+                                                    title="Excluir tarefa"
+                                                > 
+                                                    🗑️
+                                                </button>
+                                            </>
+                                        )}
+                                    </div>
+                                </motion.li>
+                            ))
+                        ) : (
+                            <motion.div 
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0 }}
+                                className="flex flex-col items-center justify-center py-12 px-4 text-center"
+                            >
+                                <span className="text-5xl mb-4">{mensagem.icone}</span>
+                                <h3 className="text-lg font-bold text-gray-800">
+                                    {mensagem.titulo}
+                                </h3>
+                                <p className="text-sm text-gray-500 max-w-[250px] mt-1">
+                                    {mensagem.subtitulo}
+                                </p>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                     </ul>
 
                     <form className="flex flex-col gap-5 mt-5 border-t pt-5">

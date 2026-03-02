@@ -23,11 +23,28 @@ export function useToDo() {
     const corRef = useRef()
     const [allCategorias, setAllCategorias] = useState([])
     const [categoriaEscolhida, setCategoriaEscolhida] = useState("")
+    const [pesquisa, setPesquisa] = useState("")
+    const [editingId, setEditingId] = useState(null);
+    const [editValue, setEditValue] = useState("");
+
+    const selecionarCategoria = (id) => {
+        if (filtroCategoriaAtivo === id) {
+            setFiltroCategoriaAtivo(null); 
+        } else {
+            setFiltroCategoriaAtivo(id);
+        }
+    }
 
     // Carregar tarefas
     async function loadTasks() {
         try {
-            const { data: { tarefas } } = await api.get("/tarefas")
+            const { data: { tarefas } } = await api.get("/tarefas", {
+                params: {
+                    search: pesquisa,
+                    category: filtroCategoriaAtivo,
+                    status: filtroAtivo
+                }
+            })
             setAllTasks(tarefas)
         } catch (err) {
             console.error("Erro ao carregar tarefas:", err)
@@ -64,6 +81,74 @@ export function useToDo() {
             setIsSubmitting(false)
         }
     }
+
+    // Inicia o modo de edição
+    const iniciarEdicao = (id, tituloAtual) => {
+        setEditingId(id);
+        setEditValue(tituloAtual);
+    };
+
+    // Cancela a edição
+    const cancelarEdicao = () => {
+        setEditingId(null);
+        setEditValue("");
+    };
+
+    // Salva a edição no banco
+    async function salvarEdicao(id) {
+        if (editValue.trim() === "") return;
+
+        try {
+            await api.patch(`/tarefas/${id}`, { titulo: editValue });
+            setEditingId(null); // Sai do modo de edição
+            loadTasks(); // Recarrega a lista
+            toast.success("Tarefa atualizada!");
+        } catch (err) {
+            toast.error("Erro ao atualizar");
+        }
+    }
+
+    const obterMensagemVazia = () => {
+        if (pesquisa) {
+            return {
+                titulo: "Busca sem resultados",
+                subtitulo: `Não encontramos nada para "${pesquisa}".`,
+                icone: "🔍"
+            };
+        }
+        
+        if (filtroAtivo === "pendentes") {
+            return {
+                titulo: "Tudo em dia!",
+                subtitulo: "Você não tem nenhuma tarefa pendente. Aproveite o descanso!",
+                icone: "🌟"
+            };
+        }
+
+        if (filtroAtivo === "concluidas") {
+            return {
+                titulo: "Nada pronto ainda?",
+                subtitulo: "Conclua uma tarefa para vê-la brilhar aqui!",
+                icone: "💪"
+            };
+        }
+
+        if (filtroCategoriaAtivo) {
+            return {
+                titulo: "Categoria vazia",
+                subtitulo: "Não há tarefas vinculadas a esta categoria no momento.",
+                icone: "📂"
+            };
+        }
+
+        return {
+            titulo: "Sua lista está vazia",
+            subtitulo: "Comece o seu dia criando uma nova tarefa abaixo!",
+            icone: "✨"
+        };
+    };
+
+    const mensagem = obterMensagemVazia();
 
     // Atualizar tarefa
     async function updateTask(id, concluida) {
@@ -110,16 +195,6 @@ export function useToDo() {
         return { label: "Em andamento", color: "bg-yellow-100 text-yellow-700" };
     }
 
-    // Filtro de tarefas
-    async function filtrarTarefas(status) {
-        try {
-            const { data: { tarefas } } = await api.get(`/filtrar-tarefa/${status}`)
-            setFiltroAtivo(status)
-            setAllTasks(tarefas)
-        } catch (err) {
-            console.error("Erro ao filtrar tarefas:", err)
-        }
-    }
 
     // adicionar categoria
     async function adicionarCategoria() {
@@ -155,20 +230,9 @@ export function useToDo() {
         }
     }
 
-    // Filtrar por categoria
-    async function filtrarPorCategoria(categoryId) {
-        try {
-            const { data: { tarefas } } = await api.get(`/tarefas-categoria/${categoryId}`)
-            if (filtroCategoriaAtivo === categoryId) {
-                setFiltroCategoriaAtivo(null)
-                loadTasks()
-                return
-            }
-            setFiltroCategoriaAtivo(categoryId)
-            setAllTasks(tarefas)
-        } catch (err) {
-            console.error("Erro ao filtrar por categoria:", err)
-        }
+    // barra de pesquisa
+    function filtrarTarefasPorPesquisa(texto) {
+        setPesquisa(texto)
     }
 
     // deletar categoria
@@ -221,10 +285,13 @@ export function useToDo() {
         }
 
     useEffect(() => {
-        loadTasks()
+        const delayDebounceFn = setTimeout(() => {
+        loadTasks();
+            }, 300); // 300ms de debounce para a busca não travar
         getUserData()
         carregarCategorias()
-    }, [])
+        return () => clearTimeout(delayDebounceFn);
+    }, [filtroAtivo, pesquisa, filtroCategoriaAtivo])
 
     return {
         allTasks,
@@ -244,7 +311,6 @@ export function useToDo() {
         dataInicioRef,
         dataTerminoRef,
         getStatus,
-        filtrarTarefas,
         filtroAtivo,
         categoriaRef,
         corRef,
@@ -254,8 +320,15 @@ export function useToDo() {
         setCategoryError,
         categoriaEscolhida,
         setCategoriaEscolhida,
-        filtrarPorCategoria,
         filtroCategoriaAtivo,
-        deleteCategoria
+        deleteCategoria,
+        pesquisa,
+        filtrarTarefasPorPesquisa,
+        setFiltroAtivo,
+        setFiltroCategoriaAtivo,
+        setPesquisa,
+        mensagem,
+        selecionarCategoria,
+        iniciarEdicao, cancelarEdicao, editValue, setEditValue, salvarEdicao, editingId
     }
 }
