@@ -70,17 +70,17 @@ export const listarCategorias = async (req, res) => {
             orderBy: { nome: 'asc' },
 
         });
-        res.status(200).json({ message: "Categorias listadas com sucesso", categorias });
+        res.status(200).json({ message: "Categorias listadas com sucesso", categorias })
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: "Erro no servidor. Tente Novamente" });
+        console.log(error)
+        res.status(500).json({ message: "Erro no servidor. Tente Novamente" })
      }
     }
 
 // deletar categoria
 
 export const deleteCategoria = async (req, res) => {
-    const categoryId = req.params.categoryId;
+    const categoryId = req.params.categoryId
     try {
         await prisma.category.delete({
             where: {
@@ -88,10 +88,10 @@ export const deleteCategoria = async (req, res) => {
                 userId: req.userId
             }
         });
-        res.status(200).json({ message: "Categoria deletada com sucesso" });
+        res.status(200).json({ message: "Categoria deletada com sucesso" })
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: "Erro no servidor. Tente Novamente" });
+        console.log(error)
+        res.status(500).json({ message: "Erro no servidor. Tente Novamente" })
     }
 };
 
@@ -124,27 +124,27 @@ export const adicionarTarefa = async (req, res) => {
 
 
 export const editarTarefa = async (req, res) => {
-    const { id } = req.params;
-    const { titulo } = req.body;
+    const { id } = req.params
+    const { titulo } = req.body
 
     if (!titulo || titulo.trim() === "") {
-        return res.status(400).json({ message: "O título não pode estar vazio" });
+        return res.status(400).json({ message: "O título não pode estar vazio" })
     }
 
     try {
         const tarefaAtualizada = await prisma.todo.update({
             where: { 
                 id: id, // Ou parseInt(id) se seu ID for número
-                userId: req.userId // Segurança: Garante que o usuário só edita a própria tarefa
+                userId: req.userId // Garante que o usuário só edita a própria tarefa
             },
             data: { titulo }
-        });
+        })
 
         res.status(200).json(tarefaAtualizada);
     } catch (error) {
-        res.status(500).json({ message: "Erro ao editar tarefa" });
+        res.status(500).json({ message: "Erro ao editar tarefa" })
     }
-};
+}
 
 // marcar como concluida
 
@@ -206,10 +206,10 @@ export const deleteAccount = async (req, res) => {
     try {
         await prisma.usuario.delete({
             where: { id: req.userId }
-        });
+        })
         res.clearCookie("refreshToken");
-        res.status(200).json({ message: "Conta excluída com sucesso" });
+        res.status(200).json({ message: "Conta excluída com sucesso" })
     } catch (err) {
-        res.status(500).json({ message: "Erro ao excluir conta" });
+        res.status(500).json({ message: "Erro ao excluir conta" })
     }
 }

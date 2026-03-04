@@ -1,8 +1,8 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Cadastro from "./pages/cadastro";
-import Login from "./pages/login";
-import ToDo from "./pages/tasks";
-import { Toaster } from "sonner";
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+import Cadastro from "./pages/cadastro"
+import Login from "./pages/login"
+import ToDo from "./pages/tasks"
+import { Toaster } from "sonner"
 
 function App() {
   return (

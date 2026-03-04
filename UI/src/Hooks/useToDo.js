@@ -24,14 +24,14 @@ export function useToDo() {
     const [allCategorias, setAllCategorias] = useState([])
     const [categoriaEscolhida, setCategoriaEscolhida] = useState("")
     const [pesquisa, setPesquisa] = useState("")
-    const [editingId, setEditingId] = useState(null);
-    const [editValue, setEditValue] = useState("");
+    const [editingId, setEditingId] = useState(null)
+    const [editValue, setEditValue] = useState("")
 
     const selecionarCategoria = (id) => {
         if (filtroCategoriaAtivo === id) {
-            setFiltroCategoriaAtivo(null); 
+            setFiltroCategoriaAtivo(null)
         } else {
-            setFiltroCategoriaAtivo(id);
+            setFiltroCategoriaAtivo(id)
         }
     }
 
@@ -84,27 +84,27 @@ export function useToDo() {
 
     // Inicia o modo de edição
     const iniciarEdicao = (id, tituloAtual) => {
-        setEditingId(id);
-        setEditValue(tituloAtual);
+        setEditingId(id)
+        setEditValue(tituloAtual)
     };
 
     // Cancela a edição
     const cancelarEdicao = () => {
-        setEditingId(null);
-        setEditValue("");
+        setEditingId(null)
+        setEditValue("")
     };
 
     // Salva a edição no banco
     async function salvarEdicao(id) {
-        if (editValue.trim() === "") return;
+        if (editValue.trim() === "") return
 
         try {
-            await api.patch(`/tarefas/${id}`, { titulo: editValue });
-            setEditingId(null); // Sai do modo de edição
-            loadTasks(); // Recarrega a lista
-            toast.success("Tarefa atualizada!");
+            await api.patch(`/tarefas/${id}`, { titulo: editValue })
+            setEditingId(null); 
+            loadTasks(); 
+            toast.success("Tarefa atualizada!")
         } catch (err) {
-            toast.error("Erro ao atualizar");
+            toast.error("Erro ao atualizar")
         }
     }
 
@@ -114,7 +114,7 @@ export function useToDo() {
                 titulo: "Busca sem resultados",
                 subtitulo: `Não encontramos nada para "${pesquisa}".`,
                 icone: "🔍"
-            };
+            }
         }
         
         if (filtroAtivo === "pendentes") {
@@ -122,7 +122,7 @@ export function useToDo() {
                 titulo: "Tudo em dia!",
                 subtitulo: "Você não tem nenhuma tarefa pendente. Aproveite o descanso!",
                 icone: "🌟"
-            };
+            }
         }
 
         if (filtroAtivo === "concluidas") {
@@ -130,7 +130,7 @@ export function useToDo() {
                 titulo: "Nada pronto ainda?",
                 subtitulo: "Conclua uma tarefa para vê-la brilhar aqui!",
                 icone: "💪"
-            };
+            }
         }
 
         if (filtroCategoriaAtivo) {
@@ -138,15 +138,15 @@ export function useToDo() {
                 titulo: "Categoria vazia",
                 subtitulo: "Não há tarefas vinculadas a esta categoria no momento.",
                 icone: "📂"
-            };
+            }
         }
 
         return {
             titulo: "Sua lista está vazia",
             subtitulo: "Comece o seu dia criando uma nova tarefa abaixo!",
             icone: "✨"
-        };
-    };
+        }
+    }
 
     const mensagem = obterMensagemVazia();
 
@@ -178,21 +178,21 @@ export function useToDo() {
 
     // status da tarefa
     function getStatus(tarefa) {
-        if (tarefa.concluida) return { label: "Concluída", color: "bg-green-100 text-green-700" };
+        if (tarefa.concluida) return { label: "Concluída", color: "bg-green-100 text-green-700" }
         
-        const hoje = new Date();
-        const dataTermino = tarefa.dataTermino ? new Date(tarefa.dataTermino) : null;
-        const dataInicio = tarefa.dataInicio ? new Date(tarefa.dataInicio) : null;
+        const hoje = new Date()
+        const dataTermino = tarefa.dataTermino ? new Date(tarefa.dataTermino) : null
+        const dataInicio = tarefa.dataInicio ? new Date(tarefa.dataInicio) : null
 
         if (dataTermino && hoje > dataTermino) {
-            return { label: "Atrasada", color: "bg-red-100 text-red-700" };
+            return { label: "Atrasada", color: "bg-red-100 text-red-700" }
         }
         
         if (dataInicio && hoje < dataInicio) {
-            return { label: "Planejada", color: "bg-blue-100 text-blue-700" };
+            return { label: "Planejada", color: "bg-blue-100 text-blue-700" }
         }
 
-        return { label: "Em andamento", color: "bg-yellow-100 text-yellow-700" };
+        return { label: "Em andamento", color: "bg-yellow-100 text-yellow-700" }
     }
 
 
@@ -271,7 +271,7 @@ export function useToDo() {
             try {
                 await api.delete("/delete-account")
                 localStorage.removeItem("token")
-                window.location.href = "/login" // Volta para o login
+                window.location.href = "/login" 
             } catch (err) {
                 alert("Erro ao excluir conta.")
             }
@@ -286,11 +286,11 @@ export function useToDo() {
 
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
-        loadTasks();
-            }, 300); // 300ms de debounce para a busca não travar
+        loadTasks()
+            }, 300) // 300ms de debounce para a busca não travar
         getUserData()
         carregarCategorias()
-        return () => clearTimeout(delayDebounceFn);
+        return () => clearTimeout(delayDebounceFn)
     }, [filtroAtivo, pesquisa, filtroCategoriaAtivo])
 
     return {
